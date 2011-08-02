@@ -31,25 +31,25 @@ public class AI extends Thread {
 	}
 	
 	private void createTree(Node<Triplet> node) {
-		System.out.println("NUM OF NODES = " + nodesCreated);
 		List<Position> positions = getAvailablePositions(node.getData().getGrid());
 		
 		for(Position pos : positions) {
 			Board temp = new Board(node.getData().getGrid());
 			temp.setPieceAt(pos.getX(), pos.getY());
 			
-			if(!uniqueBoardAndMove.containsKey(temp.getHash())) {
+	//		if(!uniqueBoardAndMove.containsKey(temp.getHash())) {
 				Node<Triplet> child = new Node<Triplet>(new Triplet(temp, pos, getBoardValue(temp)));
 				nodesCreated++;
 				node.addChild(child);
-				uniqueBoardAndMove.put(temp.getHash(), pos);
-			}
+	//			uniqueBoardAndMove.put(temp.getHash(), pos);
+	//		}
 		}
 		
 		for(Node<Triplet> child : node.getChildren()) {
 			if(child.getData().getScore() == 0)
 				createTree(child);
 		}
+
 	}
 	
 	private int getBoardValue(Board grid) {
