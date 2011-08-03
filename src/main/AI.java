@@ -2,8 +2,10 @@ package main;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 public class AI extends Thread {
 
@@ -14,6 +16,8 @@ public class AI extends Thread {
 	Tree<Triplet> tree;
 	
 	Map<Integer, Position> uniqueBoardAndMove;
+
+	Queue<Node<Triplet>> queue = new LinkedList<Node<Triplet>>();
 	
 	private int nodesCreated = 0;
 	
@@ -32,24 +36,28 @@ public class AI extends Thread {
 	
 	private void createTree(Node<Triplet> node) {
 		List<Position> positions = getAvailablePositions(node.getData().getGrid());
-		
+						
 		for(Position pos : positions) {
 			Board temp = new Board(node.getData().getGrid());
 			temp.setPieceAt(pos.getX(), pos.getY());
 			
-	//		if(!uniqueBoardAndMove.containsKey(temp.getHash())) {
-				Node<Triplet> child = new Node<Triplet>(new Triplet(temp, pos, getBoardValue(temp)));
-				nodesCreated++;
-				node.addChild(child);
-	//			uniqueBoardAndMove.put(temp.getHash(), pos);
-	//		}
+			Node<Triplet> child = new Node<Triplet>(new Triplet(temp, pos, getBoardValue(temp)));
+			nodesCreated++;
+			node.addChild(child);
+			queue.add(child);
+		}		
+		System.out.println(nodesCreated);
+
+		while(queue.size() > 0) {			
+			createTree(queue.remove());
 		}
-		
+
+		/*
 		for(Node<Triplet> child : node.getChildren()) {
 			if(child.getData().getScore() == 0)
 				createTree(child);
 		}
-
+		 */
 	}
 	
 	private int getBoardValue(Board grid) {
