@@ -13,51 +13,52 @@ public class AI extends Thread {
 	// Player 1		   = -1
 	// Tie / No Winner =  0
 	
-	Tree<Triplet> tree;
-	
 	Map<Integer, Position> uniqueBoardAndMove;
 
-	Queue<Node<Triplet>> queue = new LinkedList<Node<Triplet>>();
+	Node<Triplet> root;
 	
-	private int nodesCreated = 0;
-	
+	Tree<Triplet> tree;
+		
 	public AI(Board grid) {
 		this.uniqueBoardAndMove = new HashMap<Integer, Position>();
-		this.tree = new Tree<Triplet>();
-		this.tree.setRootElement(new Node<Triplet>(new Triplet(new Board(grid), new Position(0, 0), 0)));
+		root = new Node<Triplet>(new Triplet(new Board(grid), new Position(0, 0), 0));
+		tree = new Tree<Triplet>();
+		tree.setRootElement(root);
 	}
 	
 	@Override
 	public void run() {
-		createTree(tree.getRootElement());
-		
-		System.out.println(tree);
+		createTree(root);
+		System.out.println("TREE DONE!");
 	}
 	
-	private void createTree(Node<Triplet> node) {
-		List<Position> positions = getAvailablePositions(node.getData().getGrid());
-						
-		for(Position pos : positions) {
-			Board temp = new Board(node.getData().getGrid());
-			temp.setPieceAt(pos.getX(), pos.getY());
+	private void createTree(Node<Triplet> root) {
+
+		Queue<Node<Triplet>> queue = new LinkedList<Node<Triplet>>();
+		
+		queue.add(root);
+		
+		while(!queue.isEmpty()) {
+			int nodesCreated = 0;
+			Node<Triplet> node = queue.remove();
 			
-			Node<Triplet> child = new Node<Triplet>(new Triplet(temp, pos, getBoardValue(temp)));
-			nodesCreated++;
-			node.addChild(child);
-			queue.add(child);
-		}		
-		System.out.println(nodesCreated);
-
-		while(queue.size() > 0) {			
-			createTree(queue.remove());
+			List<Position> positions = getAvailablePositions(node.getData().getGrid());
+			
+			for(Position pos : positions) {
+				Board temp = new Board(node.getData().getGrid());
+				temp.setPieceAt(pos.getX(), pos.getY());
+				
+				Node<Triplet> child = new Node<Triplet>(new Triplet(temp, pos, getBoardValue(temp)));
+				nodesCreated++;
+				node.addChild(child);
+				queue.add(child);
+			}
+			if(nodesCreated == 0) {
+				System.out.println(queue.size());
+				System.out.println(queue.peek());
+				System.out.println(tree.toList().size());
+			}
 		}
-
-		/*
-		for(Node<Triplet> child : node.getChildren()) {
-			if(child.getData().getScore() == 0)
-				createTree(child);
-		}
-		 */
 	}
 	
 	private int getBoardValue(Board grid) {

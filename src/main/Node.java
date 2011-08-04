@@ -12,6 +12,7 @@ public class Node<T> {
 
 	private T data;
 	private List<Node<T>> children;
+	private boolean visited = false;
 
 	/**
 	 * Default ctor.
@@ -140,5 +141,13 @@ public class Node<T> {
 		}
 		sb.append("]").append("}");
 		return sb.toString();
+	}
+
+	public void setVisited(boolean visited) {
+		this.visited = visited;
+	}
+
+	public boolean isVisited() {
+		return visited;
 	}
 }
