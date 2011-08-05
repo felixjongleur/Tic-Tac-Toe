@@ -11,7 +11,8 @@ public class AI extends Thread {
 
 	// Player 2 (Comp) =  1
 	// Player 1		   = -1
-	// Tie / No Winner =  0
+	// Tie 			   =  0
+	// Still Playing   =  2
 	
 	Map<Integer, Board> uniqueBoardAndMove;
 
@@ -35,7 +36,7 @@ public class AI extends Thread {
 		
 		int count = 0;
 		for(Node<Triplet> node : tree.toList()) {
-			if(node.getData().getScore() == 0)
+			if(node.getData().getScore() == 2)
 				count++;
 		}
 		System.out.println("Count = " + count);
@@ -58,15 +59,17 @@ public class AI extends Thread {
 				Board temp = new Board(node.getData().getGrid());
 				temp.setPieceAt(pos.getX(), pos.getY());				
 				
-				if(getBoardValue(temp) == 0 && isBoardUnique(temp)) {
+				
+				
+				if(isBoardUnique(temp)) {
 					Node<Triplet> child = new Node<Triplet>(new Triplet(temp, pos, getBoardValue(temp)));
+					
+					if(getBoardValue(temp) == 2)
+						queue.add(child);
+					
 					nodesCreated++;
 					node.addChild(child);
-					queue.add(child);
 					uniqueBoardAndMove.put(temp.hashCode(), temp);
-				} else {
-			//		System.out.println(uniqueBoardAndMove.get(temp.hashCode()));
-			//		System.out.println(nodesCreated);
 				}
 			}
 		/*	if(nodesCreated == 1) {
@@ -116,7 +119,11 @@ public class AI extends Thread {
 				return 1;
 			else if(grid.getTurn() == 1)
 				return -1;			
-		}		
+		}
+		for(int pos = 0; pos < grid.getGrid().length; pos++) {
+			if(grid.getGrid()[pos] == 0)
+				return 2;
+		}
 		return 0;
 	}
 	
