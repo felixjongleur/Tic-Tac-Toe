@@ -1,39 +1,60 @@
 package main;
 
+import java.util.Arrays;
+
 public class Board {
 
 	// 0 == empty
-	// 1 == O
-	// 2 == X
-	private int[][] grid;
+	// 1 == X
+	// 2 == O
+	private int[] grid;
 	
 	private int turn = 1;
 	
 	public Board() {
-		grid = new int[3][3];
+		grid = new int[9];
 	}
 	
-	public int[][] getGrid() {
+	public int[] getGrid() {
 		return grid;
 	}
 	
-	public int getHash() {
-		int value = 0;
-		for(int y = 0; y < 3; y++) {
-			for(int x = 0; x < 3; x++) {
-				if(getPieceAt(x, y) == 2) {
-					value += 2 * (y + x);
-				}
-				if(getPieceAt(x, y) == 1) {
-					value += (y + x);
-				}
-			}
-		}
-		return value;
+	public int getPosition(int x, int y) {
+		if(y == 0)
+			return x;
+		if(y == 1)
+			return x + 3;
+		
+		return x + 6;
+	}	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(grid);
+		result = prime * result + turn;
+		return result;
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Board other = (Board) obj;
+		if (!Arrays.equals(grid, other.grid))
+			return false;
+		if (turn != other.turn)
+			return false;
+		return true;
+	}
+
 	public Board(Board g) {
-		grid = new int[3][3];
+		grid = new int[9];
 		
 		for(int y = 0; y < 3; y++) {
 			for(int x = 0; x < 3; x++) {
@@ -43,13 +64,13 @@ public class Board {
 		this.turn = g.getTurn();
 	}
 	
-	public int getPieceAt(int x, int y) {
-		return grid[y][x];
+	public int getPieceAt(int x, int y) {		
+		return grid[getPosition(x, y)];
 	}
 	
 	public void setPieceAt(int x, int y) {
 		if(getPieceAt(x, y) == 0) {
-			grid[y][x] = turn;
+			grid[getPosition(x, y)] = turn;
 			
 			if(!gameOver()) {
 				if(turn == 1)
@@ -61,7 +82,7 @@ public class Board {
 	}
 	
 	private void setValueAt(int x, int y, int value) {
-		grid[y][x] = value;
+		grid[getPosition(x, y)] = value;
 	}
 	
 	public int getTurn() {
@@ -105,9 +126,9 @@ public class Board {
 				if(getPieceAt(x, y) == 0)
 					output += " ";
 				else if(getPieceAt(x, y) == 1)
-					output += "O";
-				else
 					output += "X";
+				else
+					output += "O";
 				if(x < 2)
 					output += "|";
 			}
